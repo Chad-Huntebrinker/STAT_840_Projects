@@ -1,0 +1,2 @@
+"0","text(x = 1:length(cooks_distance) + 1, y = cooks_distance, labels = ifelse(cooks_distance > 0.5660568,"
+"0","                              names(cooks_distance), """"),col = ""yellow"")"

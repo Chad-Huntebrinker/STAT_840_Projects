@@ -1,0 +1,3 @@
+"0","#Box plots of some of the variables to see if there are any outliers"
+"0","options(scipen = 999)"
+"0","boxplot(sampled_df$price, ylab = ""Home Price"", horizontal = TRUE)"

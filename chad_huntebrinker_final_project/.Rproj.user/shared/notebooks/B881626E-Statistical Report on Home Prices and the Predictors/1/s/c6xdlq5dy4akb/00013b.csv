@@ -1,0 +1,3 @@
+"0",""
+"0","#Independence of error terms"
+"0","plot(residuals(final_model), type = ""l"", col = ""blue"", main = ""(f)"", ylab = ""Residuals"")"

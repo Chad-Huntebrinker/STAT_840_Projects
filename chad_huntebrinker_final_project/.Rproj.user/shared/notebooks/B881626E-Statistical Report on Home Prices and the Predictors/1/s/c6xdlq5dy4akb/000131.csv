@@ -1,0 +1,5 @@
+"0",""
+"0",""
+"0","#Homorskedasticity"
+"0","plot(fitted(final_model), residuals(final_model), main = ""(c)"","
+"0","     xlab = expression(hat(Y)), ylab = ""Residuals"")"

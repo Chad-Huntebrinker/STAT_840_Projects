@@ -1,0 +1,1 @@
+"0","boxplot(sampled_df$bath, ylab = ""Number of Baths"", horizontal = TRUE)"
