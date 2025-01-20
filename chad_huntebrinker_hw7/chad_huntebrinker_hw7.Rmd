@@ -1,0 +1,209 @@
+---
+title: "Chad Huntebrinker's Homework 7"
+author: "Chad Huntebrinker"
+date: "2024-10-28"
+output:
+  word_document: default
+  html_document: default
+---
+
+Problem 2.23
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Grade_Point_Average_Data.xlsx")
+
+# GPA ~ ACT
+# Fit the model and get the summary of the model
+model_1 <- lm(GPA~ACT_Score,data=excel_data)
+sum_of_model_1 <- summary(model_1)
+sum_of_model_1
+
+# Plot the graph just to see
+plot(GPA~ACT_Score,data=excel_data)
+
+#Problem 2.23a
+anova_table <- anova(model_1)
+
+#Problem 2.23b
+#MSR
+anova_table$`Mean Sq`[1]
+
+#MSE
+anova_table$`Mean Sq`[2]
+
+#They will estimate the same quantity when the null hypothesis is true (H0: B1 = 0).
+
+#Problem 2.23c
+#H0: B1 = 0: F* <= qf(1 - 0.01, 1, 118)
+#Ha: B1 != 0: F* > qf(1 - 0.01, 1, 118)
+#Check to see if Ha is true:
+anova_table$`F value`[1]
+qf(1 - 0.01, 1, 118)
+anova_table$`F value`[1] > qf(1 - 0.01, 1, 118)
+#Conclusion: B1 != 0, there is a linear association
+
+#Problem2.23d
+model_1_reduced <- lm(GPA~1,data=excel_data)
+anova_table2 <- anova(model_1_reduced,model_1)
+
+#Absolute magnitude of reduction
+anova_table2$`Sum of Sq`[2]
+#Relative reduction
+anova_table2$`Sum of Sq`[2] / anova_table2$RSS[1]
+#It's also known as R^2 or coefficient of determination
+summary(model_1)$r.square
+
+#Problem 2.23e
+sqrt(anova_table2$`Sum of Sq`[2] / anova_table2$RSS[1])
+#r = +0.2694818
+
+#Problem 2.23f
+#In this case, r has a more clear-cut operational interpration.  This is due to the answer
+#of r (+0.2694818) showing that there is a slight positive linear relationship between
+#the two variables. And we can see that is the case on the graph too (positive linear relationship
+#between points until we get to around 27).
+```
+
+Problem 2.29
+```{r}
+#Chad Huntebrinker
+
+#Load the library and data in to R
+library(readxl)
+excel_data <- read_excel("Muscle_Mass_Data.xlsx")
+
+#Muscle_Mass ~ Age
+#Fit the model
+model_3 <- lm(Muscle_Mass~Age,data=excel_data)
+sum_of_model_3 <- summary(model_3)
+
+#Plot to see the graph
+plot(Muscle_Mass~Age, data = excel_data)
+
+#Problem 2.29a
+SSE_model_3 <- excel_data$Muscle_Mass - predict(model_3, data.frame(Age=excel_data$Age))
+
+
+SSR_model_3 <- predict(model_3, data.frame(Age=excel_data$Age)) - mean(excel_data$Muscle_Mass)
+
+plot(SSE_model_3 ~ Age, data = excel_data)
+plot(SSR_model_3 ~ Age, data = excel_data)
+
+#It looks like the SSR plays a larger component of SSTO.
+#That means that R^2 will be closer to 1, leading to a greater degree in linearity
+
+
+#Problem 2.29b
+anova_table <- anova(model_3)
+
+#Problem 2.29c
+#H0: B1 = 0: F* <= qf(1 - 0.05, 1, 58)
+#Ha: B1 != 0: F* > qf(1 - 0.05, 1, 58)
+#Check to see if Ha is true:
+anova_table$`F value`[1]
+qf(1 - 0.05, 1, 58)
+anova_table$`F value`[1] > qf(1 - 0.05, 1, 58)
+#Conclusion: B1 != 0, there is a linear association
+
+#Problem 2.29d
+model_3_reduced <- lm(Muscle_Mass~1,data=excel_data)
+anova_table2 <- anova(model_3_reduced,model_3)
+
+1 - anova_table2$`Sum of Sq`[2] / anova_table2$RSS[1]
+#0.2499332 or 24.99%
+#It is relatively small
+
+#Problem 2.29e
+#R^2 = 0.7500668
+anova_table2$`Sum of Sq`[2] / anova_table2$RSS[1]
+
+#r = -0.866064
+sqrt(anova_table2$`Sum of Sq`[2] / anova_table2$RSS[1])
+
+```
+
+Problem 2.32
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Crime_Rate_Data.xlsx")
+
+# Fit the model and get the summary of the model
+model_4 <- lm(Crime_Rate~Highschool_Diploma_Percentage,data=excel_data)
+sum_of_model_4 <- summary(model_4)
+sum_of_model_4
+
+# Plot the graph just to see
+plot(Crime_Rate~Highschool_Diploma_Percentage,data=excel_data)
+
+#Problem 2.32a
+model_4_reduced <- lm(Crime_Rate~1,data=excel_data)
+summary(model_4)
+summary(model_4_reduced)
+
+#Problem 2.32b
+#1)
+SSE_F <- deviance(model_4)
+
+#2)
+SSE_R <- deviance(model_4_reduced)
+
+#3)
+dfF = 82
+
+#4)
+dfR = 83
+
+#5)
+F_stat <- ((SSE_R - SSE_F) / (dfR - dfF)) / (SSE_F / dfF)
+
+#6)
+#H0: B1 = 0: F* <= qf(1 - 0.01, dfR - dfF, dfF)
+#Ha: B1 != 0: F* > qf(1 - 0.01, dfR - dfF, dfF)
+#Check to see if Ha is true:
+F_stat
+qf(1 - 0.01, dfR - dfF, dfF)
+F_stat > qf(1 - 0.01, dfR - dfF, dfF)
+#Conclusion: B1 != 0, there is a linear association
+
+#Problem 2.32c
+#t-test for with alpha = 0.01 that B1 != 0
+abs(sum_of_model_4$coefficients[2,3]) > qt(1 - 0.01/2, 82)
+abs(sum_of_model_4$coefficients[2,3])
+sqrt(F_stat)
+#Yes, they are
+```
+
+Problem 2.64
+```{r}
+#Chad Huntebrinker
+
+#Load the library and data in to R
+library(readxl)
+excel_data <- read_excel("SENIC_Data.xlsx")
+
+#Length_of_Stay ~ Infection_Risk
+#Fit the model
+model_5 <- lm(Length_of_Stay~Infection_Risk,data=excel_data)
+sum_of_model_5 <- summary(model_5)
+
+#Length_of_Stay ~ Available_facilities_and_services
+model_6 <- lm(Length_of_Stay~Available_facilities_and_services,data=excel_data)
+sum_of_model_6 <- summary(model_6)
+
+#Length_of_Stay ~ Routine_Chest_X-ray
+model_7 <- lm(Length_of_Stay~`Routine_Chest_X-ray`,data=excel_data)
+sum_of_model_7 <- summary(model_7)
+
+sum_of_model_5$r.square
+sum_of_model_6$r.square
+sum_of_model_7$r.square
+
+#The largest reduction in variability with the average length of stay is Infection Risk
+```
+
