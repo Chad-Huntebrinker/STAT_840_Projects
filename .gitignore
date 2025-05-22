@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+echo "chad_huntebrinker_final_project/realtor-data.zip.csv" >> .gitignore
+echo "chad_huntebrinker_final_project/.RData" >> .gitignore
