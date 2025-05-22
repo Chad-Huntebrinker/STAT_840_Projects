@@ -1,0 +1,263 @@
+---
+title: "Chad Huntebrinker's Homework 11"
+author: "Chad Huntebrinker"
+date: "2024-11-26"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Problem 9.21 and 9.22
+```{r}
+#Chad Huntebrinker
+
+library(leaps)
+library(readxl)
+
+excel_data <- read_excel("Job_Proficiency_Data.xlsx")
+
+#Fit the model
+model_1 <- lm(Y~X1 + X3 + X4, data=excel_data)
+sum_of_model_1 <- summary(model_1)
+
+#Problem 9.21
+#Calculate the SSE and PRESS models
+model_1_SSE <- sum(model_1$residuals^2)
+
+model_1_PRESS <- sum((model_1$residuals / (1 - hatvalues(model_1)))^2)
+
+model_1_PRESS
+model_1_SSE
+#Since PRESS is larger than the SSE, this suggest that the model might be overfitted and MSE is
+#not a reliable indicator.
+
+#Problem 9.22a
+excel_data2 <- read_excel("Job_Proficiency_Data2.xlsx")
+
+pairs(excel_data)
+cor(excel_data[,-1])
+
+pairs(excel_data2)
+cor(excel_data2[,-1])
+
+#Yes, they are reasonably similiar
+
+#Problem 9.22b
+model_2 <- lm(Y~X1 + X3 + X4, data=excel_data2)
+#Validation Model
+summary(model_2)
+summary(model_2)$coefficients[, "Std. Error"]
+sum(model_2$residuals^2)
+anova(model_2)["Residuals", "Mean Sq"]
+#Y = 122.76705 + 0.31238X1 + 1.40676X3 + 0.42838X4
+
+#Regular Model
+sum_of_model_1
+sum_of_model_1$coefficients[, "Std. Error"]
+sum(model_1$residuals^2)
+anova(model_1)["Residuals", "Mean Sq"]
+#Y = 124.20002 + 0.29633X1 + 1.35697X3 + 0.51742X4
+
+#Problem 9.22c
+model_2_prediction <- predict(model_2)
+model_2_MSPE <- mean((excel_data2$Y - model_2_prediction)^2)
+model_2_MSPE
+model_1_MSE <- mean((excel_data$Y - predict(model_1))^2)
+model_1_MSE
+#MSE is lower than MSPE but not significantly; thus, there isn't much
+#evidence of bias.
+
+#Problem 9.22d
+full_data <- rbind(excel_data, excel_data2)
+model_3 <- lm(Y~X1 + X3 + X4, data=full_data)
+summary(model_3)
+summary(model_1)
+
+#The intercept standard deviations are reduced, but not the other ones; in fact, they increased.
+```
+
+Problem 9.27
+```{r}
+#Chad Huntebrinker
+
+library(leaps)
+library(readxl)
+
+excel_data <- read_excel("SENIC_Data.xlsx")
+data_part1 <- excel_data[1:56,]
+data_part2 <- excel_data[57:113,]
+
+#Problem 9.27a
+#The best subset according to the Cp criterion is using age, check x-ray ratio, and census.
+#So we will use that as our regression model
+model_1 <- lm(log(Length_of_Stay)~Age + `Routine_Chest_X-ray` + Average_daily_census, data = data_part2)
+
+validation_model <- lm(log(Length_of_Stay)~Age + `Routine_Chest_X-ray` + Average_daily_census, data = data_part1)
+
+summary(model_1)$coefficients[, "Std. Error"]
+sum(model_1$residuals^2)
+anova(model_1)["Residuals", "Mean Sq"]
+
+summary(validation_model)$coefficients[, "Std. Error"]
+sum(validation_model$residuals^2)
+anova(validation_model)["Residuals", "Mean Sq"]
+
+#The validation model seems similar to the model-building one.
+
+#Problem 9.27b
+model_1_MSE <- mean((data_part2$Length_of_Stay - predict(model_1))^2)
+validation_model_MSPE <- mean((data_part1$Length_of_Stay - predict(validation_model))^2)
+
+model_1_MSE
+validation_model_MSPE
+#The MSE and MSPE have a slight difference which wouldn't indicate any bias
+
+#Problem 9.27c
+model_2 <- lm(log(Length_of_Stay)~Age + `Routine_Chest_X-ray` + Average_daily_census, data=excel_data)
+summary(model_2)$coefficients
+
+summary(model_1)$coefficients
+
+#The coefficients and standard deviations are different from those of the model building set.
+#We would expect there to be a difference in the estimates due to new examples being introduced.
+```
+
+Problem 10.5
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+require(faraway)
+
+excel_data <- read_excel("Brand_preference_data.xlsx")
+
+#Problem 10.5a
+model_1 <- lm(Yi~Xi1+Xi2, data = excel_data)
+
+prplot(model_1,1)
+
+prplot(model_1,2)
+
+#Problem 10.5b
+#It looks like both Xi1 and Xi2 would contribute to the model due to both of them having
+#a linear relationship with the residuals of the model
+
+#Problem 10.5c
+model_Yi_X1 <- lm(Yi ~ Xi1, data = excel_data)
+model_X2_X1 <- lm(Xi2 ~ Xi1, data = excel_data)
+
+
+model_2 <- lm(model_Yi_X1$residuals~model_X2_X1$residuals)
+
+summary(model_2)
+```
+
+Problem 10.15
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Brand_preference_data.xlsx")
+model_1 <- lm(Yi~Xi1+Xi2, data = excel_data)
+
+#Problem 10.15a
+pairs(excel_data)
+cor(excel_data[,-1])
+#It shows there is no association between X1 and X2
+
+#Problem 10.15b
+vif(model_1)
+
+#They are both equal to 1 because there is no correlation between the predictor variables
+```
+
+
+Problem 10.19
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+library(dplyr)
+require(faraway)
+
+excel_data <- read_excel("Job_Proficiency_Data.xlsx")
+
+#Problem 10.19a
+model_1 <- lm(Y~X1 + X3, data=excel_data)
+model_1_residuals <- model_1$residuals
+excel_data <-excel_data %>% 
+  mutate(X1X3 = X1*X3)
+
+plot(model_1_residuals~predict(model_1))
+plot(model_1_residuals~X1, data = excel_data)
+plot(model_1_residuals~X2, data = excel_data)
+plot(model_1_residuals~X3, data = excel_data)
+plot(model_1_residuals~X4, data = excel_data)
+plot(model_1_residuals~X1X3, data = excel_data)
+
+#The Yhat graph seems okay along with X1, X2, and X3 and X1X3.
+#X4 might have a curve (starts up, goes down, then starts going up again).
+#Overall, doesn't look like there's any modification needed.
+
+#Problem 10.19b
+model_X1_X3 <- lm(X1 ~ X3, data = excel_data)
+model_X3_X1 <- lm(X3 ~ X1, data = excel_data)
+
+prplot(model_X1_X3, 1)
+prplot(model_X3_X1, 1)
+
+#No modification seems to be needed.
+
+#Problem 10.19c
+qqnorm(model_1$residuals)
+qqline(model_1$residuals)
+cor(model_1$residuals, qqnorm(model_1$residuals, plot.it = FALSE)$x)
+#The table has it listed between 0.957 and 0.96 and the correlation coefficient is 0.98
+#Thus, it is reasonable.
+
+#Problem 10.19d
+#Ha: If SDR > 2.508325, then it is an outlier
+#H1: If SDR <= 2.508325, then it is not an outlier
+
+model_1_SDR <- rstudent(model_1)
+bon_cutoff <- qt(1 - 0.5 / 50, df = model_1$df.residual)
+outliers <- abs(model_1_SDR) > bon_cutoff
+
+#The following are outliers
+which(outliers)
+model_1_SDR[16]
+
+#Problem 10.19e
+which(hatvalues(model_1)>2*3/25)
+excel_data[c(7,18),]
+
+#Problem 10.19f
+dffits_values <- dffits(model_1)
+dfbetas_values <- dfbetas(model_1)
+cooks_values <- cooks.distance(model_1)
+
+dffits_values[c(7, 16, 18)]
+#Case 7 and 16 are okay, case 18 indicates a possible influence as it is almost equal to 1
+
+dfbetas_values[c(7, 16, 18)]
+#All the cases seem okay (they are less than 1)
+
+cooks_values[c(7, 16, 18)]
+#Case 7 and 16 are okay, case 18 indicates a possible influence as it is greater than
+#the 10 or 20 percent cutoff.
+
+#As a result, case 7 and 16 do not seem to be outliers.  Case 18 indicates some suspicion and
+#should be investigated deeper.
+
+#Problem 10.19g
+vif_values <- vif(model_1)
+vif_values
+#They indicate a basically no multicollinearity between the predictor variables.
+```
+

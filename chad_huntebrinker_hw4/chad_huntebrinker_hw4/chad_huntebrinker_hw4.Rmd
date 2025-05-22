@@ -1,0 +1,248 @@
+---
+title: "Chad Huntebrinker's Homework 4"
+author: "Chad Huntebrinker"
+date: "2024-09-24"
+output:
+  word_document: default
+  html_document: default
+---
+
+Question 2.4b and c: With a 99% confidence interval for B1, test using the test statistic t* to find a linear association.  Find the P-value.
+```{r}
+#Chad Huntebrinker
+#Problem 2.4b
+#Load the library and data in to R
+library(readxl)
+
+excel_data <- read_excel("Grade_Point_Average_Data.xlsx")
+
+# GPA ~ ACT
+# Fit the model and get the summary of the model
+model_1 <- lm(GPA~ACT_Score,data=excel_data)
+sum_of_model_1 <- summary(model_1)
+sum_of_model_1
+sum_of_model_1$coefficients[2,4]
+
+# Plot the graph just to see
+plot(GPA~ACT_Score,data=excel_data)
+abline(model_1,col="red")
+
+#Calculate the t score
+b1 <- sum_of_model_1$coefficients[2, 1]
+se_b1 <- sum_of_model_1$coefficients[2, 2]
+
+#a = 0.01
+t_1 <- b1 / se_b1
+
+#If the t_1 > than the t score, than we conclude that H1 is true (which is B1 != 0)
+t_1 > qt(0.995, 118)
+
+#Problem 2.4c
+#Calculate the p_value
+p_1 <- 2 * (1 - pt(t_1, 118))
+
+#If the p score is less than alpha, than H1 is true (which is B1 != 0)
+p_1 < 0.01
+```
+
+Problem 2.6b: With a level of significance of .05, conduct a t test and find the P-value to see if there is a linear association
+```{r}
+#Chad Huntebrinker
+#Problem 2.6b
+#Load the library and data in to R
+library(readxl)
+
+excel_data <- read_excel("Airfreight_Breakage_Data.xlsx")
+
+#Number_Broker ~ Number_Transferred
+#Fit the model
+model_2 <- lm(Number_Broker~Number_Transferred,data=excel_data)
+sum_of_model_2 <- summary(model_2)
+sum_of_model_2
+sum_of_model_2$coefficients[2,4]
+
+#Plot to see the graph
+plot(Number_Broker~Number_Transferred, data = excel_data)
+abline(model_2,col="blue")
+
+
+#Calculate the t score
+b1 <- sum_of_model_2$coefficients[2, 1]
+se_b1 <- sum_of_model_2$coefficients[2, 2]
+
+#a = 0.05
+t_1 <- b1 / se_b1
+
+#If the t_1 > than the t score, than we conclude that H1 is true (which is B1 != 0)
+t_1 > qt(0.975, 8)
+
+#Calculate the p_value
+p_1 <- 2 * (1 - pt(t_1, 8))
+
+#If the p score is less than alpha, than H1 is true (which is B1 != 0)
+p_1 < 0.01
+
+```
+
+Problem 2.14a: Find the confidence interval with a 90% confidence interval for the mean service time on calls in which six copier are serviced
+```{r}
+#Chad Huntebrinker
+#Problem 2.14a
+#Load the library and data in to R
+library(readxl)
+
+excel_data <- read_excel("Copier_Maintenance_Data.xlsx")
+
+#Total_Minutes ~ Number_Of_Copiers
+#Fit the model
+model_3 <- lm(Total_Minutes~Number_Of_Copiers,data=excel_data)
+sum_of_model_3 <- summary(model_3)
+
+#Plot to see the graph
+plot(Total_Minutes~Number_Of_Copiers, data = excel_data)
+abline(model_3,col="blue")
+
+
+#Get b1 and se_b1
+b1 <- sum_of_model_3$coefficients[2, 1]
+se_b1 <- sum_of_model_3$coefficients[2, 2]
+
+#Get the mean service time for 6 copiers serviced
+Y_hat <- predict(model_3, data.frame(Number_Of_Copiers=6))
+
+#Now get the confidence interval
+predict(model_3, data.frame(Number_Of_Copiers=6), interval = "confidence", level = 0.90)
+
+
+
+```
+
+Problem 2.27a and c: With a control risk for type 1 error of .05, find if there is a negative linear association.  Estimate with a 95% confidence interval the difference in expected mm for women whose ages differ by one year.
+```{r}
+#Chad Huntebrinker
+#Problem 2.27a
+#Load the library and data in to R
+library(readxl)
+
+excel_data <- read_excel("Muscle_Mass_Data.xlsx")
+
+#Muscle_Mass ~ Age
+#Fit the model
+model_4 <- lm(Muscle_Mass~Age,data=excel_data)
+sum_of_model_4 <- summary(model_4)
+
+#Plot to see the graph
+plot(excel_data$Muscle_Mass~excel_data$Age)
+abline(model_4,col="green")
+
+
+#Get b1 and se_b1
+b1 <- summary(model_4)$coefficients[2, 1]
+se_b1 <- summary(model_4)$coefficients[2, 2]
+
+#Find t score
+t_1 <- b1 / se_b1
+
+#If the t_1 > than the t score, than we conclude that H1 is true (which is B1 != 0)
+t_1 < qt(0.05, 58)
+
+#Find p score
+p_1 <- pt(t_1, 58)
+
+#Problem 2.27c
+qt(0.975, 58)
+b1
+se_b1
+
+#Lower confidence
+b1 - (qt(0.975, 58) * se_b1)
+
+#Higher confidence
+b1 + (qt(0.975, 58) * se_b1)
+
+```
+
+
+Problem 2.65:Obtain a separate interval estimate of B1 for each egion.  Use a 95% confidence coefficient in each case.
+```{r}
+#Chad Huntebrinker
+#Problem 2.65
+#Load the library and data in to R
+library(readxl)
+
+excel_data <- read_excel("SENIC_Data.xlsx")
+
+#First
+#For Infection_Risk, plot the Data
+plot(Length_of_Stay ~ Infection_Risk, data = excel_data, pch = 16, xlab = "Infection Risk", ylab = "Length of Stay")
+
+#Fit a Linear Regression model
+model_7 <- lm(Length_of_Stay ~ Infection_Risk, data = excel_data)
+
+#Find b coefficients
+b7_coefficients <- model_7$coefficients
+
+#Add the fitted line
+abline(b7_coefficients, lwd =2, lty =2, col="red")
+
+#Second
+#For Available_facilities_and_services, plot the Data
+plot(Length_of_Stay ~ Available_facilities_and_services, data = excel_data, pch = 16, xlab = "Available facilities and services", ylab = "Length of Stay")
+
+#Fit a Linear Regression model
+model_8 <- lm(Length_of_Stay ~ Available_facilities_and_services, data = excel_data)
+
+#Find b coefficients
+b8_coefficients <- model_8$coefficients
+
+#Add the fitted line
+abline(b8_coefficients, lwd =2, lty =2, col="green")
+
+#Third
+#For Routine_Chest_X-ray, plot the Data
+plot(Length_of_Stay ~ `Routine_Chest_X-ray`, data = excel_data, pch = 16, xlab = "Routine Chest X-ray", ylab = "Length of Stay")
+
+#Fit a Linear Regression model
+model_9 <- lm(Length_of_Stay ~ `Routine_Chest_X-ray`, data = excel_data)
+
+#Find b coefficients
+b9_coefficients <- model_9$coefficients
+
+#Add the fitted line
+abline(b9_coefficients, lwd =2, lty =2, col="blue")
+
+#Get the summary of each model
+sum7 <- summary(model_7)
+sum8 <- summary(model_8)
+sum9 <- summary(model_9)
+sum7$coefficients[2,4]
+sum8$coefficients[2,4]
+sum9$coefficients[2,4]
+
+#Calculate the t score
+b7 <- summary(model_7)$coefficients[2, 1]
+se_b7 <- summary(model_7)$coefficients[2, 2]
+
+b8 <- summary(model_8)$coefficients[2, 1]
+se_b8 <- summary(model_8)$coefficients[2, 2]
+
+b9 <- summary(model_9)$coefficients[2, 1]
+se_b9 <- summary(model_9)$coefficients[2, 2]
+
+#a = 0.05
+t_7 <- b7 / se_b7
+t_8 <- b8 / se_b8
+t_9 <- b9 / se_b9
+
+#Calculate the lower and upper confidence bounds for each variable
+b7 - (qt(0.975, 112) * se_b7)
+b7 + (qt(0.975, 112) * se_b7)
+
+b8 - (qt(0.975, 112) * se_b8)
+b8 + (qt(0.975, 112) * se_b8)
+
+b9 - (qt(0.975, 112) * se_b9)
+b9 + (qt(0.975, 112) * se_b9)
+
+```
+

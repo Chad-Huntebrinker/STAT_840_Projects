@@ -1,0 +1,344 @@
+---
+title: "Chad Huntebrinker's HW8"
+author: "Chad Huntebrinker"
+date: "2024-11-06"
+output:
+  word_document: default
+  html_document: default
+---
+
+Problem 6.5 and 6.6
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Brand_preference_data.xlsx")
+
+#Problem 6.5a
+pairs(Yi~Xi1+Xi2,data=excel_data) 
+cor(excel_data)
+#We see that there is a strong linear correlation between Yi and Xi1, but not so much
+#anywhere else.
+
+#Problem 6.5b
+model_1 <- lm(Yi~Xi1+Xi2, data = excel_data)
+sum_of_model_1 <- summary(model_1)
+sum_of_model_1
+#Yi1 = 37.65 + 4.425 * Xi1 + 4.375 * Xi2
+
+#Problem 6.5c
+sum_of_model_1$residuals
+boxplot(sum_of_model_1$residuals)
+#We see the residuals are fairly well distrubted.
+
+#Problem 6.5d
+# Plot residuals versus each X to examine the relationship
+plot(model_1$residuals~predict(model_1),pch=16,ylab="Residuals", data = excel_data)
+plot(model_1$residuals~Xi1,pch=16,ylab="Residuals", data = excel_data)
+plot(model_1$residuals~Xi2,pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi1 * excel_data$Xi2
+plot(model_1$residuals~temp_values,pch=16,ylab="Residuals", data = excel_data)
+
+qqnorm(residuals(model_1))
+qqline(residuals(model_1))
+#What we find is:
+#Yhat seems to have more of a curve.
+#Xi1 seems to be distributed well, but only at values 4, 6, 8, and 10
+#Xi2 is the same but only at values 2 and 4
+#Xi1 * Xi2 seems to be distributed well
+#The normal plot seems reasonable
+
+#Problem 6.6a
+#H0: B1 = B2 = 0
+#Ha: not all Bk = 0 (k = 1 and 2)
+sum_of_model_1
+#F score = 129.1 on 2 and 13 DF
+129.1 > qf(1 - 0.01, 2, 13)
+#Ha is true.  Meaning that both B1 and B2 != 0
+
+#Problem 6.6b
+#P-value = 2.658e-09 (which is basically 0+)
+
+#Problem 6.6c
+confint(model_1, level=0.995)
+```
+
+
+Problem 6.18-6.21
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+library(lawstat)
+
+excel_data <- read_excel("Commercial_properties_data.xlsx")
+
+#Problem 6.18a
+stem(excel_data$Xi1)
+stem(excel_data$Xi2)
+stem(excel_data$Xi3)
+stem(excel_data$Xi4)
+#These plots provide the range of values that these varaiables are (which we can use
+#to see if there are any outliers or see if it's distributed well).
+
+#Problem 6.18b
+pairs(Yi~Xi1+Xi2+Xi3+Xi4,data=excel_data) 
+cor(excel_data)
+#There seems to be a bit of a linear relationship between Yi and Xi4. Besides that,
+#there really isn't anything
+
+#Problem 6.18c
+model_2 <- lm(Yi~Xi1+Xi2+Xi3+Xi4, data = excel_data)
+sum_of_model_2 <- summary(model_2)
+sum_of_model_2
+#Yi = 1.220e+01 - 1.420e-01Xi1 + 2.820e-01Xi2 + 6.193e-01Xi3 + 7.924e-06Xi4
+
+#Problem 6.18d
+sum_of_model_2$residuals
+boxplot(sum_of_model_2$residuals)
+#While it seems to be fairly symmetrical, we see that there are some outlier
+#residuals in the plot
+
+#Problem 6.18e
+plot(model_2$residuals~predict(model_2),pch=16,xlab = "Yhat",ylab="Residuals", data = excel_data)
+plot(model_2$residuals~Xi1,pch=16,ylab="Residuals", data = excel_data)
+plot(model_2$residuals~Xi2,pch=16,ylab="Residuals", data = excel_data)
+plot(model_2$residuals~Xi3,pch=16,ylab="Residuals", data = excel_data)
+plot(model_2$residuals~Xi4,pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi1 * excel_data$Xi2
+plot(model_2$residuals~temp_values, xlab = "Xi1 * Xi2", pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi1 * excel_data$Xi3
+plot(model_2$residuals~temp_values, xlab = "Xi1 * Xi3", pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi1 * excel_data$Xi4
+plot(model_2$residuals~temp_values, xlab = "Xi1 * Xi4", pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi2 * excel_data$Xi3
+plot(model_2$residuals~temp_values, xlab = "Xi2 * Xi3", pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi2 * excel_data$Xi4
+plot(model_2$residuals~temp_values, xlab = "Xi2 * Xi4", pch=16,ylab="Residuals", data = excel_data)
+temp_values <- excel_data$Xi3 * excel_data$Xi4
+plot(model_2$residuals~temp_values, xlab = "Xi3 * Xi4", pch=16,ylab="Residuals", data = excel_data)
+
+qqnorm(residuals(model_2))
+qqline(residuals(model_2))
+#Yhat: relatively normal
+#Xi1:relatively normal, but there's a lack of values between 5 and 10
+#Xi2: relatively normal
+#Xi3: relatively normal, but there's some outliers at 0.6
+#Xi4: relatively normal
+#Xi1 * Xi2: relatively normal, but lack of values between 50 and 100
+#Xi1 * Xi3: relatively normal, but outliers beyond 1
+#Xi1 * Xi4: relatively normal
+#Xi2 * Xi3: relatively normal, but there's some outliers past 2
+#Xi2 * Xi4: relatively normal
+#Xi3 * Xi4: relatively normal, but there's some outliers past 50,000
+#Normal plot: relatively normal
+
+#Problem 6.18f
+#Yes, you could.
+
+#Problem 6.18g
+#H0: t*bf <= qt(0.975,79), the error variance is constant
+#Ha: t*bf > qt(0.975,79), the error variance is not constant
+mean(model_2$fitted.values)
+sum(model_2$fitted.values < mean(model_2$fitted.values))
+
+group_1_values <- model_2$fitted.values[model_2$fitted.values < mean(model_2$fitted.values)]
+group_2_values <- model_2$fitted.values[model_2$fitted.values > mean(model_2$fitted.values)]
+
+fitted_values <- c(group_1_values, group_2_values)
+groups <- factor(rep(c("Group1", "Group2"), times = c(40, 41)))
+
+levene.test(fitted_values, groups)
+#Test if the H0 is true
+1.6323 <= qt(0.975,79)
+#It is true, so the error variance is constant
+
+#Problem 6.19a
+#H0: B1 = B2 = 0
+#Ha: not all Bk = 0 (k = 1 and 2)
+sum_of_model_2
+#F score = 26.76 on 4 and 76 DF
+26.76 > qf(1 - 0.05, 4, 76)
+#Ha is true.  Meaning that B1 and B2 and B3 and B4 all do not equal 0
+#p-value: 7.272e-14
+
+#Problem 6.19b
+confint(model_2, level=0.9875)
+
+#Problem 6.19c
+sum_of_model_2$r.squared
+#This shows there seems to be a decent amount of linear association between
+#Xi1, Xi2, Xi3, and Xi4 combined and Yi
+
+#Problem 6.20
+sum_of_model_2
+excel_data2 <- read_excel("Mean_rental_rates_data.xlsx")
+
+value1 <- predict(model_2, data.frame(Xi1 = excel_data2$Xi1[1], Xi2 = excel_data2$Xi2[1],
+                                      Xi3 = excel_data2$Xi3[1], Xi4 = excel_data2$Xi4[1]),
+                                      interval = "confidence", se.fit = TRUE)
+
+value2 <- predict(model_2, data.frame(Xi1 = excel_data2$Xi1[2], Xi2 = excel_data2$Xi2[2],
+                                      Xi3 = excel_data2$Xi3[2], Xi4 = excel_data2$Xi4[2]),
+                                      interval = "confidence", se.fit = TRUE)
+
+value3 <- predict(model_2, data.frame(Xi1 = excel_data2$Xi1[4], Xi2 = excel_data2$Xi2[3],
+                                      Xi3 = excel_data2$Xi3[4], Xi4 = excel_data2$Xi4[3]),
+                                      interval = "confidence", se.fit = TRUE)
+
+value4 <- predict(model_2, data.frame(Xi1 = excel_data2$Xi1[4], Xi2 = excel_data2$Xi2[4],
+                                      Xi3 = excel_data2$Xi3[4], Xi4 = excel_data2$Xi4[4]), 
+                                      interval = "confidence", se.fit = TRUE)
+value1$fit
+value2$fit
+value3$fit
+value4$fit
+
+#Problem 6.21
+excel_data3 <- read_excel("No_rental_information_data.xlsx")
+
+value1 <- predict(model_2, data.frame(Xi1 = excel_data3$Xi1[1], Xi2 = excel_data3$Xi2[1],
+                                      Xi3 = excel_data3$Xi3[1], Xi4 = excel_data3$Xi4[1]),
+                  interval="prediction", se.fit = TRUE)
+
+value2 <- predict(model_2, data.frame(Xi1 = excel_data3$Xi1[2], Xi2 = excel_data3$Xi2[2],
+                                      Xi3 = excel_data3$Xi3[2], Xi4 = excel_data3$Xi4[2]),
+                  interval="prediction", se.fit = TRUE)
+
+value3 <- predict(model_2, data.frame(Xi1 = excel_data3$Xi1[3], Xi2 = excel_data3$Xi2[3],
+                                      Xi3 = excel_data3$Xi3[3], Xi4 = excel_data3$Xi4[3]),
+                  interval="prediction", se.fit = TRUE)
+value1$fit
+value2$fit
+value3$fit
+
+```
+
+
+Problem 7.3
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Brand_preference_data.xlsx")
+
+model_1 <- lm(Yi~Xi1+Xi2, data = excel_data)
+sum_of_model_1 <- summary(model_1)
+
+reduced_model_1 <- lm(Yi~Xi1, data = excel_data)
+
+#Problem 7.3a
+anova_table <- anova(reduced_model_1, model_1)
+anova_table
+
+#Problem 7.3b
+#H0: p-value >= 0.01, X2 can be dropped
+#H1: p-value < 0.01, X2 should not be dropped
+anova_table$F[2]
+anova_table$`Pr(>F)`[2]
+anova_table$`Pr(>F)`[2] < 0.01
+#H1 is true, don't drop X2
+```
+
+
+Problem 7.7 and 7.8
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Commercial_properties_data.xlsx")
+
+model_2 <- lm(Yi~Xi1+Xi2+Xi3+Xi4, data = excel_data)
+sum_of_model_2 <- summary(model_2)
+sum_of_model_2
+
+#Problem 7.7a
+model_Xi4 <- lm(Yi ~ Xi4, data = excel_data)
+model_Xi1_Xi4 <- lm(Yi ~ Xi1 + Xi4, data = excel_data)
+model_Xi2_Xi1_Xi4 <- lm(Yi ~ Xi2 + Xi1 + Xi4, data = excel_data)
+
+anova_table_Xi4 <- anova(model_Xi4, model_Xi1_Xi4)
+anova_table_Xi2_Xi1_Xi4 <- anova(model_Xi1_Xi4, model_Xi2_Xi1_Xi4)
+anova_table_Xi3_Xi2_Xi1_Xi4 <- anova(model_Xi2_Xi1_Xi4, model_2)
+
+anova_table_Xi4
+anova_table_Xi2_Xi1_Xi4
+anova_table_Xi3_Xi2_Xi1_Xi4
+
+#7.7b
+#H0: p-value >= 0.01, X3 can be dropped
+#H1: p-value < 0.01, X3 should not be dropped
+anova_table_Xi3_Xi2_Xi1_Xi4$F[2]
+anova_table_Xi3_Xi2_Xi1_Xi4$`Pr(>F)`[2]
+anova_table_Xi3_Xi2_Xi1_Xi4$`Pr(>F)`[2] < 0.01
+#H1 is false, so can drop X3
+
+#Problem 7.8
+anova_table_Xi1_Xi4 <- anova(model_Xi1_Xi4, model_2)
+anova_table_Xi1_Xi4
+
+#H0: p-value >= 0.01, X2 and X3 can be dropped
+#H1: p-value < 0.01, X2 and X3 should not be dropped
+anova_table_Xi1_Xi4$F[2]
+anova_table_Xi1_Xi4$`Pr(>F)`[2]
+anova_table_Xi1_Xi4$`Pr(>F)`[2] < 0.01
+#H1 is true, so you shouldn't drop X2 and X3
+
+
+```
+
+
+Problem 7.27
+```{r}
+#Chad Huntebrinker
+
+library(readxl)
+
+excel_data <- read_excel("Commercial_properties_data.xlsx")
+
+#Problem 7.27a
+model_3 <- lm(Yi~Xi1+Xi4, data = excel_data)
+sum_of_model_3 <- summary(model_3)
+sum_of_model_3
+
+#Yi = -1.145e-01 * Xi1 + 1.045e-05 * Xi4
+
+#Problem 7.27b
+#The coefficients changed a little bit, 
+#Xi1 increased positively a little and Xi4 got a little bigger.
+
+#Problem 7.27c
+model4 <- lm(Yi~Xi3, data = excel_data)
+model5 <- lm(Yi~Xi3 + Xi4,  data = excel_data)
+model6 <- lm(Yi~Xi1, data = excel_data)
+model7 <- lm(Yi~Xi3 + Xi1, data = excel_data)
+model8 <- lm(Yi~Xi4, data = excel_data)
+
+ssr_X4 <- sum((excel_data$Yi - mean(excel_data$Yi))^2) - sum(residuals(model8)^2)
+anova_table <- anova(model4, model5)
+anova_table$`Sum of Sq`[2]
+
+ssr_X1 <- sum((excel_data$Yi - mean(excel_data$Yi))^2) - sum(residuals(model6)^2)
+anova_table <- anova(model4, model7)
+anova_table$`Sum of Sq`[2]
+
+
+#They don't equal, but they are extremely similar.
+
+
+#Problem 7.27d
+#             Yi        Xi1        Xi2         Xi3        Xi4
+#Yi   1.00000000 -0.2502846  0.4137872  0.06652647 0.53526237
+#Xi1 -0.25028456  1.0000000  0.3888264 -0.25266347 0.28858350
+#Xi2  0.41378716  0.3888264  1.0000000 -0.37976174 0.44069713
+#Xi3  0.06652647 -0.2526635 -0.3797617  1.00000000 0.08061073
+#Xi4  0.53526237  0.2885835  0.4406971  0.08061073 1.00000000
+
+#It means that X3 doesn't provide any help to X1 and X4 when explaining the variability in
+#the model.  This can be seen by the fact that X1 and X4 have a much more varied correlation coefficient
+# then X3 does.
+```
+
